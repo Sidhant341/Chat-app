@@ -36,8 +36,10 @@ const autoscroll = () => {
         $messages.scrollTop = $messages.scrollHeight
     }
 }
-socket.on('message', (message) => {
-    console.log(message)
+socket.on('message', (message, callback) => {
+    if(callback) {
+        alert('Profanity not allowed!')
+    }
     const html = Mustache.render(messageTemplate, {
         username: message.username,
         message: message.text,
@@ -45,6 +47,7 @@ socket.on('message', (message) => {
     })
     $messages.insertAdjacentHTML('beforeend', html)
     autoscroll()
+    
 })
 
 socket.on('locationMessage', (message) => {
@@ -55,8 +58,8 @@ socket.on('locationMessage', (message) => {
         createdAt: moment(message.createdAt).format('h:mm a')
     })
     $messages.insertAdjacentHTML('beforeend', html)
+    autoscroll()
 })
-
 socket.on('roomData', ({ room, users }) => {
     const html = Mustache.render(sidebarTemplate, {
         room,
@@ -78,7 +81,7 @@ $messageForm.addEventListener('submit', (e) => {
         $messageFormInput.focus()
 
         if (error) {
-            return console.log(error)
+            return alert(error)
         }
 
         console.log('Message delivered!')
